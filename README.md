@@ -1,7 +1,7 @@
 # CuciKuy
 Repository ditujukan untuk memenuhi Tugas UAS MK Bahasa Pemrograman II
 
-![Logo Proyek](path/to/logo.png)
+![Logo Proyek](https://ibb.co.com/56gsNhB)
 
 Deskripsi singkat tentang proyek ini yang menjelaskan tujuan utama dan nilai yang ditawarkan kepada pengguna atau kontributor.
 
