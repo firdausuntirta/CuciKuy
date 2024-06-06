@@ -1,7 +1,8 @@
 # CuciKuy
 Repository ditujukan untuk memenuhi Tugas UAS MK Bahasa Pemrograman II
 
-![Logo Proyek](https://i.ibb.co.com/rmR5C24/DALL-E-2024-06-06-09-49-49-Create-a-logo-for-a-vehicle-washing-service-with-the-text-Cuci-KUY-The-de.png)
+Anggota Kelompok
+- **Firdaus Satrio Utomo (3337230039)**
 
 Deskripsi singkat tentang proyek ini yang menjelaskan tujuan utama dan nilai yang ditawarkan kepada pengguna atau kontributor.
 
