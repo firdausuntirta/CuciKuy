@@ -1,0 +1,45 @@
+<nav class="bg-green-500 p-4">
+  <div
+    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center"
+  >
+    <div class="flex-shrink-0">
+      <a href="{% url 'index' %}" class="text-white font-bold text-xl"
+        >CuciKUY!</a
+      >
+      {% if request.user.is_authenticated %}
+      <span class="text-white-300 bg-white ml-4 px-2 py-1 rounded-full"
+        >{{ request.user.nama }}</span
+      >
+      {% else %}
+      <span class="text-white ml-4">Guest</span>
+      {% endif %}
+    </div>
+    <div class="flex items-center">
+      <div class="hidden md:block">
+        <ul class="ml-4 flex items-center space-x-6">
+          <li>
+            <a
+              href="{% url 'index' %}"
+              class="text-white hover:text-gray-200 transition duration-300"
+              >Beranda</a
+            >
+          </li>
+          <li>
+            <a
+              href="#"
+              class="text-white hover:text-gray-200 transition duration-300"
+              >Laporan</a
+            >
+          </li>
+          <li>
+            <a
+              href="{% url 'logout' %}"
+              class="text-white hover:text-gray-200 ml-2 transition duration-300"
+              >Logout</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>

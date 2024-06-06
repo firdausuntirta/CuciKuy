@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manajemen Transaksi - CuciKUY!</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-green-300">
+    <!-- Navbar -->
+    {% include 'nav.html' %}
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-4">
+      <h1 class="text-xl font-bold text-green-800 mb-4">Manajemen Transaksi</h1>
+
+      <!-- Form untuk menambah atau mengedit transaksi -->
+      <div class="mb-8">
+        <form
+          action="{% url 'transaksi' %}"
+          method="post"
+          class="bg-white p-4 shadow-md rounded-lg"
+        >
+          {% csrf_token %}
+          <div class="mb-4">
+            <label for="transaction_date" class="block text-sm font-bold mb-2"
+              >Tanggal Transaksi:</label
+            >
+            {{ form.transaction_date }}
+          </div>
+          <div class="mb-4">
+            <label for="pelanggan" class="block text-sm font-bold mb-2"
+              >Nama Pelanggan:</label
+            >
+            {{ form.pelanggan }}
+          </div>
+          <div class="mb-4">
+            <label for="jeniskendaraan" class="block text-sm font-bold mb-2"
+              >Jenis Kendaraan:</label
+            >
+            {{ form.jeniskendaraan }}
+          </div>
+          <button
+            type="submit"
+            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-2"
+          >
+            Simpan Transaksi
+          </button>
+        </form>
+      </div>
+
+      <!-- Load custom tags -->
+      {% load custom_tags %}
+
+      <!-- Filter Transaksi -->
+      <div class="mb-8">
+        <form
+          id="filterForm"
+          method="get"
+          action="{% url 'transaksi' %}"
+          class="flex items-center space-x-4 bg-white p-4 shadow-md rounded-lg"
+        >
+          <div>
+            <label for="bulan" class="block text-sm font-bold mb-2"
+              >Bulan:</label
+            >
+            <select
+              id="bulan"
+              name="bulan"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              required
+            >
+              <option value="">Pilih Bulan</option>
+              {% for i in 12|range_filter %}
+              <option value="{{ i }}">{{ i }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label for="hari" class="block text-sm font-bold mb-2">Hari:</label>
+            <select
+              id="hari"
+              name="hari"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              required
+            >
+              <option value="">Pilih Hari</option>
+              {% for i in 31|range_filter %}
+              <option value="{{ i }}">{{ i }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <button
+              type="submit"
+              class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-6"
+            >
+              Tampilkan
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tabel Transaksi -->
+      <div class="bg-white p-4 shadow-md rounded-lg">
+        <table class="w-full table-auto">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="border px-4 py-2">No</th>
+              <th class="border px-4 py-2">Tanggal</th>
+              <th class="border px-4 py-2">Nama Pelanggan</th>
+              <th class="border px-4 py-2">Jenis Kendaraan</th>
+              <th class="border px-4 py-2">Harga</th>
+              <th class="border px-4 py-2">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for transaction in transactions %}
+            <tr class="bg-white hover:bg-gray-100 transition duration-200">
+              <td class="border px-4 py-2">{{ forloop.counter }}</td>
+              <td class="border px-4 py-2">
+                {{ transaction.transaction_date }}
+              </td>
+              <td class="border px-4 py-2">{{ transaction.pelanggan }}</td>
+              <td class="border px-4 py-2">{{ transaction.jeniskendaraan }}</td>
+              <!-- prettier-ignore -->
+              <td class="border px-4 py-2">
+                        {% if transaction.price %}
+                            {{ transaction.price.harga }}
+                        {% else %}
+                            Harga tidak tersedia
+                        {% endif %}
+                    </td>
+              <!-- prettier-ignore -->
+              <td class="border px-2 py-2 rounded-lg">
+                <div class="flex space-x-3 w-full">
+                    <button data-id="{{ transaction.idtransaction }}" onclick="openEditModal(this)" class="bg-blue-600 hover:bg-blue-800 text-white px-2 py-1 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center flex-grow">
+                        <i class="fas fa-edit mr-1"></i>Edit
+                    </button>
+                    <button data-id="{{ transaction.idtransaction }}" onclick="openDeleteModal(this)" class="bg-red-600 hover:bg-red-800 text-white px-2 py-1 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center flex-grow">
+                        <i class="fas fa-trash-alt mr-1"></i>Hapus
+                    </button>
+                    <a href="{% url 'cetak_nota' transaction.idtransaction %}" class="bg-green-600 hover:bg-green-800 text-white px-2 py-1 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center flex-grow">
+                      <i class="fas fa-print mr-1"></i>Cetak Nota
+                  </a>
+                  
+                </div>
+            </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div
+      id="editModal"
+      class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+    >
+      <div
+        class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+      >
+        <div class="mt-3 text-center">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Edit Transaksi
+          </h3>
+          <div class="mt-2 px-7 py-3">
+            <form id="editForm" method="post">
+              {% csrf_token %}
+              <div class="mb-4">
+                <label
+                  for="edit_transaction_date"
+                  class="block text-sm font-bold mb-2"
+                  >Tanggal Transaksi:</label
+                >
+                <input
+                  type="date"
+                  id="edit_transaction_date"
+                  name="transaction_date"
+                  required
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                />
+              </div>
+              <div class="mb-4">
+                <label for="edit_pelanggan" class="block text-sm font-bold mb-2"
+                  >Nama Pelanggan:</label
+                >
+                <input
+                  type="text"
+                  id="edit_pelanggan"
+                  name="pelanggan"
+                  required
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                />
+              </div>
+              <div class="mb-4">
+                <label
+                  for="edit_jeniskendaraan"
+                  class="block text-sm font-bold mb-2"
+                  >Jenis Kendaraan:</label
+                >
+                <select
+                  id="edit_jeniskendaraan"
+                  name="jeniskendaraan"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
+                >
+                  <option value="motor">Motor</option>
+                  <option value="mobil">Mobil</option>
+                </select>
+              </div>
+              <button
+                type="submit"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mt-2"
+              >
+                Simpan Perubahan
+              </button>
+              <button
+                type="button"
+                onclick="closeEditModal()"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mt-2"
+              >
+                Batal
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div
+      id="deleteModal"
+      class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+    >
+      <div
+        class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+      >
+        <div class="mt-3 text-center">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Konfirmasi Hapus
+          </h3>
+          <div class="mt-2 px-7 py-3">
+            <p class="text-sm text-gray-500">
+              Apakah Anda yakin ingin menghapus transaksi ini?
+            </p>
+          </div>
+          <div class="items-center px-4 py-3">
+            <form id="deleteForm" method="post">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              >
+                Hapus
+              </button>
+            </form>
+            <button
+              type="button"
+              onclick="closeDeleteModal()"
+              class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://kit.fontawesome.com/3e1ec18e22.js"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      function openEditModal(button) {
+        var transactionId = button.getAttribute("data-id");
+        var row = button.closest("tr");
+        var transactionDate = row.querySelector("td:nth-child(2)").innerText;
+        var pelanggan = row.querySelector("td:nth-child(3)").innerText;
+        var jenisKendaraan = row
+          .querySelector("td:nth-child(4)")
+          .innerText.toLowerCase();
+
+        document.getElementById("edit_transaction_date").value =
+          transactionDate;
+        document.getElementById("edit_pelanggan").value = pelanggan;
+        document.getElementById("edit_jeniskendaraan").value = jenisKendaraan;
+
+        var actionUrl = "{% url 'edit_transaction' 0 %}".replace(
+          "0",
+          transactionId
+        );
+        document.getElementById("editForm").action = actionUrl;
+        document.getElementById("editModal").style.display = "block";
+      }
+
+      function closeEditModal() {
+        document.getElementById("editModal").style.display = "none";
+      }
+
+      function openDeleteModal(button) {
+        var transactionId = button.getAttribute("data-id");
+        var actionUrl = "{% url 'delete_transaction' 0 %}".replace(
+          "0",
+          transactionId
+        );
+        document.getElementById("deleteForm").action = actionUrl;
+        document.getElementById("deleteModal").style.display = "block";
+      }
+
+      function closeDeleteModal() {
+        document.getElementById("deleteModal").style.display = "none";
+      }
+    </script>
+  </body>
+</html>

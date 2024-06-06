@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel - CuciKUY!</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+  </head>
+  <body class="bg-green-300">
+    {% include 'nav.html' %}
+
+    <div class="container mx-auto py-8 px-4">
+      <div class="bg-green-500 shadow-md rounded-lg p-6">
+        <h1 class="text-2xl text-white font-bold mb-4">
+          Selamat Datang Admin {{ request.user }} - CuciKUY!
+        </h1>
+        <p class="mb-4 text-white">
+          Kelola pelanggan dan layanan Anda dengan efisien.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+          <a
+            href="{% url 'transaksi' %}"
+            class="block p-4 bg-gray-100 hover:bg-gray-200 rounded-md transition duration-300"
+          >
+            <h2 class="text-lg font-semibold mb-2">Manajemen Transaksi</h2>
+            <p class="text-gray-600">
+              Kelola data transaksi, lihat, tambah, edit, atau hapus transaksi.
+            </p>
+          </a>
+          <a
+            href="{% url 'datamaster' %}"
+            class="block p-4 bg-gray-100 hover:bg-gray-200 rounded-md transition duration-300"
+          >
+            <h2 class="text-lg font-semibold mb-2">Manajemen Data Master</h2>
+            <p class="text-gray-600">
+              Kelola data master, lihat, tambah, edit, atau hapus data.
+            </p>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mx-auto pb-8 px-4">
+      <div class="bg-gray-200 shadow-md rounded-lg p-6 mt-6">
+        <h2 class="text-xl font-semibold mb-4">Statistik Layanan</h2>
+        <select
+          id="monthSelect"
+          class="mb-4 p-2 bg-gray-500 text-white rounded"
+        >
+          <option value="">Pilih Bulan</option>
+          <option value="1">Januari</option>
+          <option value="2">Februari</option>
+          <option value="3">Maret</option>
+          <option value="4">April</option>
+          <option value="5">Mei</option>
+          <option value="6">Juni</option>
+          <option value="7">Juli</option>
+          <option value="8">Agustus</option>
+          <option value="9">September</option>
+          <option value="10">Oktober</option>
+          <option value="11">November</option>
+          <option value="12">Desember</option>
+        </select>
+        <canvas id="myChart" width="400" height="100"></canvas>
+      </div>
+    </div>
+
+    <script>
+      var ctx = document.getElementById("myChart").getContext("2d");
+      var chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "Jumlah Transaksi",
+              data: [],
+              borderColor: "rgba(54, 162, 235, 1)",
+              borderWidth: 2,
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 5,
+              },
+            },
+          },
+        },
+      });
+
+      document
+        .getElementById("monthSelect")
+        .addEventListener("change", function () {
+          var month = this.value;
+          if (month) {
+            fetch(`/transaksi/data/${month}/`)
+              .then((response) => response.json())
+              .then((data) => {
+                const daysInMonth = data.length;
+                chart.data.labels = Array.from(
+                  { length: daysInMonth },
+                  (_, i) => i + 1
+                );
+                chart.data.datasets[0].data = data;
+                chart.data.datasets[0].label = `Jumlah Transaksi di ${
+                  this.options[this.selectedIndex].text
+                }`;
+                chart.update();
+              });
+          }
+        });
+
+      // Initial update for the current month
+      var currentMonth = new Date().getMonth() + 1;
+      document.getElementById("monthSelect").value = currentMonth;
+      fetch(`/transaksi/data/${currentMonth}/`)
+        .then((response) => response.json())
+        .then((data) => {
+          const daysInMonth = data.length;
+          chart.data.labels = Array.from(
+            { length: daysInMonth },
+            (_, i) => i + 1
+          );
+          chart.data.datasets[0].data = data;
+          chart.data.datasets[0].label = `Jumlah Transaksi di ${
+            document.getElementById("monthSelect").options[currentMonth].text
+          }`;
+          chart.update();
+        });
+    </script>
+  </body>
+</html>

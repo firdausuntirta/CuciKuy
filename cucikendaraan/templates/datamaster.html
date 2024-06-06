@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Master - CuciKUY!</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2DnvF+B/6D9o1fVfHHY5EbpiE7VqOJfJFyJFZm+pGzXQxz0TckqDA4/PmXx8kUp2g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body class="bg-green-300">
+    {% include 'nav.html' %}
+    <div class="container mx-auto py-4 px-2">
+      <!-- Buttons to toggle forms -->
+      <div class="flex justify-between mb-4">
+        <button
+          onclick="toggleForm('userForm')"
+          class="bg-green-600 hover:bg-green-800 text-white px-2 py-1 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex"
+        >
+          Tambah User
+        </button>
+      </div>
+
+      <div id="userForm" class="bg-white p-6 shadow-md rounded-lg hidden mb-8">
+        <h2 class="text-xl font-semibold mb-4 text-green-700">Tambah User</h2>
+        <form method="post" class="bg-white p-4 shadow-md rounded-lg">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label for="username" class="block text-sm font-bold mb-2"
+              >Username:</label
+            >
+            {{ user_form.username }}
+          </div>
+          <div class="mb-4">
+            <label for="nama" class="block text-sm font-bold mb-2">Nama:</label>
+            {{ user_form.nama }}
+          </div>
+          <div class="mb-4">
+            <label for="nama" class="block text-sm font-bold mb-2"
+              >Password:</label
+            >
+            {{ user_form.password }}
+          </div>
+          <button
+            type="submit"
+            class="bg-green-500 hover:bg-green-800 text-white px-2 py-1 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex"
+          >
+            Tambah User
+          </button>
+        </form>
+      </div>
+
+      <!-- Tabel Daftar Harga -->
+      <div class="bg-white p-6 shadow-md rounded-lg mt-8">
+        <h2 class="text-xl font-semibold mb-4">Daftar Harga</h2>
+        <table class="w-full table-auto">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="border px-4 py-2">Jenis Kendaraan</th>
+              <th class="border px-4 py-2">Harga</th>
+              <th class="border px-4 py-2">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for price in prices %}
+            <tr
+              class="bg-white hover:bg-gray-100 transition duration-200"
+              data-id="{{ price.id }}"
+              data-jeniskendaraan="{{ price.jeniskendaraan }}"
+              data-harga="{{ price.harga }}"
+            >
+              <td class="border px-4 py-2">{{ price.jeniskendaraan }}</td>
+              <td class="border px-4 py-2">{{ price.harga }}</td>
+              <td class="border px-2 py-2 rounded-lg">
+                <div class="flex space-x-3 w-full">
+                  <button
+                    data-id="{{ price.id }}"
+                    onclick="openEditPriceModal(this)"
+                    class="bg-blue-600 hover:bg-blue-800 text-white px-2 py-1 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center flex-grow"
+                  >
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                  <!-- <button
+                    data-id="{{ price.id }}"
+                    onclick="openDeletePriceModal(this)"
+                    class="bg-red-600 hover:bg-red-800 text-white px-2 py-1 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center flex-grow"
+                  >
+                    <i class="fas fa-trash-alt"></i> Hapus
+                  </button> -->
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tabel Daftar User -->
+      <div class="bg-white p-6 shadow-md rounded-lg mt-8">
+        <h2 class="text-xl font-semibold mb-4">Daftar User</h2>
+        <table class="w-full table-auto">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="border px-4 py-2">Username</th>
+              <th class="border px-4 py-2">Nama</th>
+              <th class="border px-4 py-2">Password</th>
+              <th class="border px-4 py-2">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr
+              class="bg-white hover:bg-gray-100 transition duration-200"
+              data-id="{{ user.id }}"
+              data-username="{{ user.username }}"
+              data-nama="{{ user.nama }}"
+            >
+              <td class="border px-4 py-2">{{ user.username }}</td>
+              <td class="border px-4 py-2">{{ user.nama }}</td>
+              <td class="border px-4 py-2">********</td>
+              <td class="border px-2 py-2 rounded-lg">
+                <div class="flex space-x-3 w-full">
+                  <button
+                    data-id="{{ user.id }}"
+                    onclick="openEditUserModal(this)"
+                    class="bg-blue-600 hover:bg-blue-800 text-white px-2 py-1 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center flex-grow"
+                  >
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                  <button
+                    data-id="{{ user.id }}"
+                    onclick="openDeleteUserModal(this)"
+                    class="bg-red-600 hover:bg-red-800 text-white px-2 py-1 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center flex-grow"
+                  >
+                    <i class="fas fa-trash-alt"></i> Hapus
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modal untuk Edit User -->
+    <div
+      id="editUserModal"
+      class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+    >
+      <div
+        class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+      >
+        <div class="mt-3 text-center">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Edit User</h3>
+          <div class="mt-2 px-7 py-3">
+            <form id="editUserForm" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="user_id" id="edit_user_id" />
+              <div class="mb-4">
+                <label
+                  for="edit_username"
+                  class="block text-sm font-medium text-gray-700"
+                  >Username</label
+                >
+                <input
+                  type="text"
+                  name="edit_username"
+                  id="edit_username"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+              <div class="mb-4">
+                <label
+                  for="edit_nama"
+                  class="block text-sm font-medium text-gray-700"
+                  >Nama</label
+                >
+                <input
+                  type="text"
+                  name="edit_nama"
+                  id="edit_nama"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+              <button
+                type="submit"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mt-2"
+              >
+                Simpan Perubahan
+              </button>
+              <button
+                type="button"
+                onclick="closeEditUserModal()"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mt-2"
+              >
+                Batal
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal untuk Edit Harga -->
+    <div
+      id="editPriceModal"
+      class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+    >
+      <div
+        class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+      >
+        <div class="mt-3 text-center">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Edit Harga
+          </h3>
+          <div class="mt-2 px-7 py-3">
+            <form id="editPriceForm" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="price_id" id="edit_price_id" />
+              <div class="mb-4">
+                <label
+                  for="edit_jeniskendaraan"
+                  class="block text-sm font-medium text-gray-700"
+                  >Jenis Kendaraan</label
+                >
+                <input
+                  type="text"
+                  name="edit_jeniskendaraan"
+                  id="edit_jeniskendaraan"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+              <div class="mb-4">
+                <label
+                  for="edit_harga"
+                  class="block text-sm font-medium text-gray-700"
+                  >Harga</label
+                >
+                <input
+                  type="text"
+                  name="edit_harga"
+                  id="edit_harga"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+              <button
+                type="submit"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mt-2"
+              >
+                Simpan Perubahan
+              </button>
+              <button
+                type="button"
+                onclick="closeEditPriceModal()"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mt-2"
+              >
+                Batal
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal untuk konfirmasi penghapusan -->
+    <div
+      id="deleteModal"
+      class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+    >
+      <div
+        class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+      >
+        <div class="mt-3 text-center">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Konfirmasi Hapus
+          </h3>
+          <div class="mt-2 px-7 py-3">
+            <p class="text-sm text-gray-500">
+              Apakah Anda yakin ingin menghapus item ini?
+            </p>
+          </div>
+          <div class="items-center px-4 py-3">
+            <form id="deleteForm" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="delete_user_id" id="delete_user_id" />
+              <input
+                type="hidden"
+                name="delete_price_id"
+                id="delete_price_id"
+              />
+              <button
+                id="confirmDelete"
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              >
+                Hapus
+              </button>
+              <button
+                type="button"
+                onclick="closeDeleteModal()"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded ml-2"
+              >
+                Batal
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://kit.fontawesome.com/3e1ec18e22.js"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      function toggleForm(formId) {
+        const forms = document.querySelectorAll("#userForm, #priceForm");
+        forms.forEach((form) => {
+          if (form.id === formId) {
+            form.classList.toggle("hidden");
+          } else {
+            form.classList.add("hidden");
+          }
+        });
+      }
+
+      function openEditUserModal(button) {
+        const tr = button.closest("tr");
+        const id = tr.dataset.id;
+        const username = tr.dataset.username;
+        const nama = tr.dataset.nama;
+        document.getElementById("edit_user_id").value = id;
+        document.getElementById("edit_username").value = username;
+        document.getElementById("edit_nama").value = nama;
+        document.getElementById("editUserModal").classList.remove("hidden");
+      }
+
+      function closeEditUserModal() {
+        document.getElementById("editUserModal").classList.add("hidden");
+      }
+
+      function openEditPriceModal(button) {
+        const tr = button.closest("tr");
+        const id = tr.dataset.id;
+        const jeniskendaraan = tr.dataset.jeniskendaraan;
+        const harga = tr.dataset.harga;
+        document.getElementById("edit_price_id").value = id;
+        document.getElementById("edit_jeniskendaraan").value = jeniskendaraan;
+        document.getElementById("edit_harga").value = harga;
+        document.getElementById("editPriceModal").classList.remove("hidden");
+      }
+
+      function closeEditPriceModal() {
+        document.getElementById("editPriceModal").classList.add("hidden");
+      }
+
+      function openDeleteUserModal(button) {
+        const id = button.dataset.id;
+        document.getElementById("delete_user_id").value = id;
+        document.getElementById("delete_price_id").value = "";
+        document.getElementById("deleteModal").classList.remove("hidden");
+      }
+
+      function openDeletePriceModal(button) {
+        const id = button.dataset.id;
+        document.getElementById("delete_price_id").value = id;
+        document.getElementById("delete_user_id").value = "";
+        document.getElementById("deleteModal").classList.remove("hidden");
+      }
+
+      function closeDeleteModal() {
+        document.getElementById("deleteModal").classList.add("hidden");
+      }
+    </script>
+  </body>
+</html>
