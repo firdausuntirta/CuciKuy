@@ -26,11 +26,19 @@ Selamat datang di repository **CuciKuy**, sebuah sistem manajemen yang elegan da
 Untuk memulai dengan **CuciKuy**, ikuti langkah-langkah berikut di lingkungan lokal Anda:
 
 ```bash
-git clone https://github.com/user/repo.git
-cd repo
-npm install
-npm start
+git clone https://github.com/firdausuntirta/CuciKuy.git
+cd CuciKuy
+pip install reportlab
+python manage.py runserver
 ```
+📝NOTE: Gunakan Username "firdaus" dan Password "Oke12345" jika anda belum membuat user
+
+ℹ️ untuk menambahkan user bisa menggunakan command dibawah ataupun bisa di website **jika sudah ada usernya**
+```bash
+python tambah_user.py
+```
+
+
 ## 📚 Cara Menggunakan
 Setelah instalasi, Anda dapat login sebagai admin untuk mengakses semua fitur manajemen. Pastikan Anda mengikuti petunjuk pada UI untuk mengelola data transaksi dan master dengan aman dan efisien.
 
